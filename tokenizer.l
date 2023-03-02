@@ -1,7 +1,11 @@
-%{ 
-    #include "y.tap.h"
-    int newLineCount = 0;
+
+%{
+    #include "y.tab.h"
+    #include<stdio.h>
+    int countn=0;
 %}
+
+%option yylineno
 
 alpha [a-zA-Z]
 digit [0-9]
@@ -9,52 +13,57 @@ unary "++"|"--"
 
 %%
 
-"int" { printf("int"); return INT; }
-"float" { printf("float"); return FLOAT; }
-"double" { printf("double"); return DOUBLT; }
-"char" { printf("char"); return CHAR; }
-"printf" { printf("printf"); return PRINTFF; }
-"scanf" { printf("scanf"); return SCANF; }
-"void" { printf("void"); return VOID; }
-"unsgined" { printf("unsgined"); return UNSIGNED; }
-"struct" { printf("struct"); return STRUCT; }
-"if" { printf("if"); return IF; }
-"else" { printf("else"); return ELSE; }
-"break" { printf("break"); return BREAK; }
-"continue" { printf("continue");return CONTINUE; }
-"switch" { printf("switch"); return SWITCH; }
-"return" { printf("return"); return RETURN; }
-"goto" { printf(""); return GOTO; }
-"+" { printf(""); return ADD; }
-"-" { printf(""); return SUBTRACT; }
-"*" { printf(""); return MULTIPLY; }
-"/" { printf(""); return DIVIDE; }
-"|" { printf(""); return BOR; }
-"&" { printf(""); return BAND; }
-"^" { printf(""); return BXOR; }
-"||" { printf(""); return OR; }
-"&&" { printf(""); return AND; }
-"!" { printf(""); return NOT; }
-"=" { printf(""); return ASSIGN; }
-"<" { printf(""); return LT; }
-">" { printf(""); return GT; }
-"<=" { printf(""); return LE; }
-">=" { printf(""); return GT; }
-"!=" { printf(""); return NE; }
-"==" { printf("");return EQ; }
-\/\/* { ; }
-\/\*(.*\n)*.*\*\/ { ; } 
-[ \t]* { ; }
-[\n] { printf(""); newLineCount++; }     
-. { printf(""); return *yytext; }              
-["].*["] { printf(""); return STRING; }
-['].['] { printf(""); return CHARACTER; }  
-[-]?[0-9]+                { printf(""); return NUMBER; }
-[-]?[0-9]+\.[0-9]{1,6} { printf(""); return FLOAT_NUM; }
-[a-zA-Z]([a-zA-Z]|[0-9])* { printf(""); return ID; }
-"++" | "--" { printf(""); return UNARY; }  
-%%
+"printf"                    { printf("manav");}
+"scanf"                     { return SCANFF; }
+int                       { printf("here");return INT; }
+"float"                     { return FLOAT; }
+"char"                      { return CHAR; }
+"void"                      { return VOID; }
+"return"                    { return RETURN; }
+"for"	                    { return FOR; }
+"if"	                    { return IF; }
+"else"	                    { return ELSE; }
+^"#include"[ ]*<.+\.h>      { return INCLUDE; }
+"true"                      { return TRUE; }
+"false"                     { return FALSE; }
+[-]?{digit}+                { return NUMBER; }
+[-]?{digit}+\.{digit}{1,6}  { return FLOAT_NUM; }
+{alpha}({alpha}|{digit})*   { return ID; }
+{unary}                     { return UNARY; }
+"<="                        { return LE; }
+">="                        { return GE; }
+"=="                        { return EQ; }
+"!="                        { return NE; }
+">"	                    { return GT; }
+"<"	                    { return LT; }
+"&&"	                    { return AND; }
+"||"	                    { return OR; }
+"+"                         { return ADD; }
+"-"                         { return SUBTRACT; }
+"/"                         { return DIVIDE; }
+"*"                         { return MULTIPLY; }
+\/\/.*                      { ; }
+\/\*(.*\n)*.*\*\/           { ; } 
+[ \t]*                      { ; }
+[\n]                        { countn++; }
+.	                    { return *yytext; }
+["].*["]                    { return STR; }
+['].[']                     { return CHARACTER; }
 
+%%
+int main(){
+FILE *file;
+file=fopen("sampleTest.c","r");
+if(!file)
+{
+printf("could not open the file");
+exit(0);
+}
+yyin=file;
+yylex();
+printf("\n");
+return(0);
+}
 int yywrap() {
     return 1;
 }
